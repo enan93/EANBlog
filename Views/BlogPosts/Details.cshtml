@@ -1,0 +1,94 @@
+﻿@using BlogProject42020.Models
+@model BlogPost
+
+
+<!-- Page Header -->
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <div class="post-heading">
+                    <h1>@Model.Title</h1>
+                    <h2 class="subheading">@Model.Abstract</h2>
+                    <span class="meta">
+                        Posted by
+                        <a href="#">Ethan A. Nance</a>
+                        on @Model.Created.ToString("MMM dd, yyyy") |
+                        @Model.ViewCount views.
+                    </span>
+                    @if (Model.Updated != null)
+                    {
+                        <span class="meta">
+                            Updated on @Model.Updated.GetValueOrDefault().ToString("MMM dd, yyyy")
+                        </span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+
+                @if (Model.MediaUrl != null)
+                {
+                    <img class="img-fluid" src="@Model.MediaUrl" alt="" />
+                }
+
+                @Html.Raw(Model.Body)
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <header>
+                <h4>Comments <span>(@Model.Comments.Count())</span></h4>
+            </header>
+
+
+            <div class="row">
+                <div class="comment">
+                    @foreach (var comment in Model.Comments.OrderByDescending(c => c.Created).ToList())
+                    {
+                        <hr />
+                        <div class="post-heading align-content-center">
+                            <ol>Date: @comment.Created | By: @comment.Author.DisplayName</ol>
+
+                        </div>
+                        <div class="align-center">
+                            <ol>@comment.CommentBody</ol>
+                        </div>
+
+                    }
+                    <hr />
+                </div>
+            </div>
+
+        </div>
+
+        <div class="form-group">
+            @*This form should not be visible unless logged in.*@
+            @if (User.Identity.IsAuthenticated)
+            {
+                using (Html.BeginForm("Create", "Comments", FormMethod.Post, null))
+                {
+                    @Html.AntiForgeryToken()
+                    @Html.Hidden("BlogPostId", Model.Id)
+                    @Html.HiddenFor(model => model.Slug)
+
+                    @Html.TextArea("CommentBody", new { rows = 5, cols = 30 })
+
+                    <button type="submit" class="btn btn-primary">Add Comment</button>
+                }
+
+
+            }
+            else
+            {
+                @Html.ActionLink("Please log in to leave a comment.", "Login", "Account")
+            }
+        </div>
+
+    </div>
+</article>

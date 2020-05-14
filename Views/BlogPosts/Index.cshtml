@@ -1,0 +1,49 @@
+﻿@using PagedList;
+@using PagedList.Mvc
+
+@using BlogProject42020.Models
+@model IPagedList<BlogPost>
+
+
+
+<!-- Main Content -->
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+            @foreach (var post in Model)
+            {
+                <div class="post-preview">
+
+                    <a href="@Url.Action("Details", "BlogPosts", new { slug = post.Slug})">
+                        <h2 class="post-title">
+                            @post.Title
+                        </h2>
+                        <h3 class="post-subtitle">
+                            @post.Abstract
+                        </h3>
+                    </a>
+                    <p class="post-meta">
+                        Posted by
+                        <a href="#">Ethan A. Nance</a>
+                        on @post.Created.ToString("MMM dd, yyyy") |
+                        @post.ViewCount views.
+                    </p>
+                    <a class="nav-item" href="@Url.Action("Edit", "BlogPosts", new { id = post.Id})">
+                        Edit
+                    </a>
+                    |
+                    <a class="nav-item" href="@Url.Action("Delete", "BlogPosts", new { id = post.Id})">
+                        Delete
+                    </a>
+                </div>
+            }
+
+            <hr>
+            <!-- Pager -->
+            <div class="clearfix">
+                Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+                @Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchStr = ViewBag.Search }))
+            </div>
+        </div>
+    </div>
+</div>

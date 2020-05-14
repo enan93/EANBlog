@@ -1,0 +1,62 @@
+﻿@using PagedList;
+@using PagedList.Mvc
+
+@using BlogProject42020.Models
+@model IPagedList<BlogPost>
+
+
+<!-- Main Content -->
+<div class="container">
+    <hr />
+    <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+
+            @foreach (var post in Model)
+            {
+            <div class="post-preview">
+
+                @if (post.MediaUrl != null)
+                {
+                    <img class="img-thumbnail" src="@post.MediaUrl" alt="" />
+                }
+
+                <a href="@Url.Action("Details", "BlogPosts", new { slug = post.Slug})">
+                    <h2 class="post-title">
+                        @post.Title
+                    </h2>
+                    <h3 class="post-subtitle">
+                        @post.Abstract
+                    </h3>
+                </a>
+                <p class="post-meta">
+                    Posted by
+                    <a href="#">Ethan A. Nance</a>
+                    on @post.Created.ToString("MMM dd, yyyy") |
+                    @post.ViewCount views.
+                </p>
+
+                <hr />
+
+            </div>
+            }
+
+            <!-- Pager -->
+        <div class="clearfix">
+            @using (Html.BeginForm("Index", "Home", FormMethod.Get, new { @class = "form" }))
+            {
+                <div class="row">
+                    <input id="searchStr" name="searchStr" class="input-block-level" type="text" placeholder="Search" />
+                    <button id="btnSearchStr" name="btnSearchStr" class="btn btn-primary" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            }
+        </div>
+            
+            <div class="clearfix">
+                Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+                @Html.PagedListPager(Model, page => Url.Action("Index", new { page, searchStr = ViewBag.Search}))
+            </div>
+        </div>
+    </div>
+</div>
